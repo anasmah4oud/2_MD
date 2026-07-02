@@ -20,17 +20,24 @@ export default function App() {
     }
 
     const handleRouting = () => {
-      const path = window.location.pathname;
+      const pathname = window.location.pathname;
       const hash = window.location.hash;
       const params = new URLSearchParams(window.location.search);
       
-      // Match explicit requested secret path: /a/a/a/a/2/0/0/2/3
-      // We also check for hash fallback as SPAs behind proxies can route hashes easier.
-      if (
-        path === '/a/a/a/a/2/0/0/2/3' || 
+      // Debug: Log routing attempt
+      console.log('🔍 Routing check:', { pathname, hash, params: params.get('admin') });
+      
+      // Match multiple ways to access admin panel:
+      // 1. Direct path: /a/a/a/a/2/0/0/2/3
+      // 2. Hash: #/a/a/a/a/2/0/0/2/3 (for Vercel/production)
+      // 3. Query param: ?admin=true (fallback)
+      const isAdminPath = 
+        pathname === '/a/a/a/a/2/0/0/2/3' || 
         hash === '#/a/a/a/a/2/0/0/2/3' || 
-        params.get('admin') === 'true'
-      ) {
+        params.get('admin') === 'true';
+      
+      if (isAdminPath) {
+        console.log('✅ Admin panel accessed!');
         setIsAdmin(true);
       } else {
         setIsAdmin(false);
@@ -40,13 +47,23 @@ export default function App() {
     // Run on mount
     handleRouting();
 
-    // Listen to changes (e.g. popstate or hash change)
+    // Listen to changes
     window.addEventListener('popstate', handleRouting);
     window.addEventListener('hashchange', handleRouting);
+    
+    // Poll for pathname changes (for direct URL navigation)
+    let lastPathname = window.location.pathname;
+    const pathChangeInterval = setInterval(() => {
+      if (window.location.pathname !== lastPathname) {
+        lastPathname = window.location.pathname;
+        handleRouting();
+      }
+    }, 100);
 
     return () => {
       window.removeEventListener('popstate', handleRouting);
       window.removeEventListener('hashchange', handleRouting);
+      clearInterval(pathChangeInterval);
     };
   }, []);
 
