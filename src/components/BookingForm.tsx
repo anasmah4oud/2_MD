@@ -186,7 +186,7 @@ export default function BookingForm({ onSuccess }: BookingFormProps) {
       const assignedGroupId = assignedGroup ? assignedGroup.id : 'default-g';
       const assignedGroupName = assignedGroup 
         ? `${assignedGroup.name} (${assignedGroup.day} الساعة ${assignedGroup.time})`
-        : 'المجموعة العامة للصف الأول الثانوي (سيتم توزيع المواعيد بالمركز)';
+        : 'المجموعة العامة للصف الثاني الثانوي (سيتم توزيع المواعيد بالمركز)';
 
       const bookingToSave: Omit<Booking, 'id'> = {
         full_name: formData.fullName.trim(),
@@ -231,7 +231,7 @@ export default function BookingForm({ onSuccess }: BookingFormProps) {
         </span>
         <h1 className="text-2xl font-black text-gray-900 leading-tight">منصة الحجز الإلكتروني</h1>
         <p className="text-emerald-800 font-extrabold text-lg mt-1">الأستاذ محمود الديب</p>
-        <p className="text-xs text-gray-500 mt-1.5">مرحلة الصف الأول الثانوي | لمادة اللغة العربية</p>
+        <p className="text-xs text-gray-500 mt-1.5">مرحلة الصف الثاني الثانوي | لمادة اللغة العربية</p>
       </div>
 
       {/* Error Alert - Supabase Connection Error */}
@@ -498,7 +498,7 @@ export default function BookingForm({ onSuccess }: BookingFormProps) {
                     <span className="text-2xl shrink-0 leading-none">{track.icon}</span>
                     <div className="text-right">
                       <p className="text-xs font-bold text-gray-900 leading-tight">{track.label}</p>
-                      <p className="text-[10px] text-gray-400 mt-0.5">الصف الأول الثانوي</p>
+                      <p className="text-[10px] text-gray-400 mt-0.5">الصف الثاني الثانوي</p>
                     </div>
                   </div>
                   <div className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
@@ -515,7 +515,7 @@ export default function BookingForm({ onSuccess }: BookingFormProps) {
         {/* Dynamic Assignment Hint */}
         <div className="bg-emerald-50/80 border border-emerald-100 rounded-xl p-3 text-xs text-emerald-900 leading-relaxed">
           <p className="font-bold mb-1">ℹ️ توزيع المجموعات واللقاءات:</p>
-          لقد تم تنظيم الحجز لطلاب الصف الأول الثانوي بمختلف المسارات. سيقوم الأستاذ محمود الديب ومساعدوه بتوزيع المجموعات وفقاً للمسار الأكاديمي الذي ستحدده أعلاه، وسيتم طباعة موعد وتفاصيل مجموعتك الخاصة تلقائياً على إيصالك الإلكتروني فور إرسال النموذج.
+          لقد تم تنظيم الحجز لطلاب الصف الثاني الثانوي بمختلف المسارات. سيقوم الأستاذ محمود الديب ومساعدوه بتوزيع المجموعات وفقاً للمسار الأكاديمي الذي ستحدده أعلاه، وسيتم طباعة موعد وتفاصيل مجموعتك الخاصة تلقائياً على إيصالك الإلكتروني فور إرسال النموذج.
         </div>
 
         {/* Submit Button */}

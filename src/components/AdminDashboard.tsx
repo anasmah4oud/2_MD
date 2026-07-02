@@ -225,7 +225,7 @@ export default function AdminDashboard() {
             لوحة التحكم السرية للمشرف والمسؤولين
           </span>
           <h1 className="text-2xl font-black text-gray-900 mt-2">بوابة إدارة حجوزات الأستاذ محمود الديب</h1>
-          <p className="text-xs text-gray-400 mt-0.5">مرحلة الصف الأول الثانوي - العام الدراسي ٢٠٢٦ / ٢٠٢٧</p>
+          <p className="text-xs text-gray-400 mt-0.5">مرحلة الصف الثاني الثانوي - العام الدراسي ٢٠٢٦ / ٢٠٢٧</p>
         </div>
 
         <button

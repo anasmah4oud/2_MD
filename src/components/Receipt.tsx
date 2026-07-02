@@ -71,7 +71,7 @@ export default function Receipt({ booking, trackConfig, onNewBooking }: ReceiptP
 
     ctx.fillStyle = '#4b5563';
     ctx.font = '14px Arial, sans-serif';
-    ctx.fillText('العام الدراسي: ٢٠٢٦ - ٢٠٢٧ | الصف الأول الثانوي', 550, 115);
+    ctx.fillText('العام الدراسي: ٢٠٢٦ - ٢٠٢٧ | الصف الثاني الثانوي', 550, 115);
 
     // Divider Line
     ctx.strokeStyle = '#e5e7eb';
@@ -229,7 +229,7 @@ export default function Receipt({ booking, trackConfig, onNewBooking }: ReceiptP
           <div>
             <span className="text-xs font-semibold uppercase tracking-wider text-amber-600 block">منصة الحجز الإلكتروني</span>
             <h1 className="text-xl font-black text-emerald-900">الأستاذ محمود الديب</h1>
-            <p className="text-[10px] text-gray-400 mt-0.5">الصف الأول الثانوي | ٢٠٢٦ - ٢٠٢٧</p>
+            <p className="text-[10px] text-gray-400 mt-0.5">الصف الثاني الثانوي | ٢٠٢٦ - ٢٠٢٧</p>
           </div>
           
           <div className="bg-amber-50 border border-amber-300 text-amber-900 px-3 py-1.5 rounded-lg text-center">
