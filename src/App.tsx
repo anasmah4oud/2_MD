@@ -3,15 +3,22 @@ import BookingForm from './components/BookingForm';
 import Receipt from './components/Receipt';
 import AdminDashboard from './components/AdminDashboard';
 import { Booking, TrackConfig } from './types';
-import { Shield, Sparkles } from 'lucide-react';
+import { Shield, Sparkles, AlertCircle } from 'lucide-react';
+import { dbService } from './supabaseClient';
 
 export default function App() {
   const [booking, setBooking] = useState<Booking | null>(null);
   const [trackConfig, setTrackConfig] = useState<TrackConfig | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [supabaseConfigured, setSupabaseConfigured] = useState(true);
 
   // Check URL path or hash to route to the hidden admin panel
   useEffect(() => {
+    // Check Supabase configuration first
+    if (!dbService.isConfigured()) {
+      setSupabaseConfigured(false);
+    }
+
     const handleRouting = () => {
       const path = window.location.pathname;
       const hash = window.location.hash;
@@ -52,6 +59,33 @@ export default function App() {
     setBooking(null);
     setTrackConfig(null);
   };
+
+  // Show error if Supabase is not configured
+  if (!supabaseConfigured) {
+    return (
+      <div className="min-h-screen bg-red-50 text-gray-900 font-sans antialiased flex flex-col items-center justify-center p-4" style={{ direction: 'rtl' }}>
+        <div className="max-w-md bg-white rounded-lg shadow-lg p-6 border-2 border-red-300">
+          <div className="flex items-center gap-3 mb-4">
+            <AlertCircle className="w-8 h-8 text-red-600" />
+            <h1 className="text-2xl font-bold text-red-600">خطأ في الإعدادات</h1>
+          </div>
+          <p className="text-gray-700 mb-4 leading-relaxed">
+            لم يتم العثور على متغيرات بيئة Supabase. يرجى التأكد من أن الملف <span className="font-mono bg-gray-100 px-2 py-1">.env</span> يحتوي على:
+          </p>
+          <ul className="space-y-2 mb-4 text-sm bg-gray-50 p-3 rounded border border-gray-200">
+            <li className="font-mono text-gray-800">VITE_SUPABASE_URL</li>
+            <li className="font-mono text-gray-800">VITE_SUPABASE_ANON_KEY</li>
+          </ul>
+          <p className="text-gray-600 text-sm mb-4">
+            راجع ملف <span className="font-mono bg-gray-100 px-2 py-1">.env.example</span> للحصول على التعليمات الكاملة.
+          </p>
+          <p className="text-xs text-gray-500">
+            📖 اقرأ ملف <span className="font-mono">SUPABASE_INSTRUCTIONS.md</span> للمزيد من التفاصيل.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   // If the admin route is active, render the admin dashboard directly
   if (isAdmin) {

@@ -58,14 +58,19 @@ export default function BookingForm({ onSuccess }: BookingFormProps) {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [groups, setGroups] = useState<Group[]>([]);
+  const [loadError, setLoadError] = useState<string>('');
+  const [submitError, setSubmitError] = useState<string>('');
 
   // Load Groups on init
   useEffect(() => {
     const loadGroups = async () => {
       try {
+        setLoadError('');
         const fetchedGroups = await dbService.getGroups();
         setGroups(fetchedGroups);
       } catch (err) {
+        const errorMsg = err instanceof Error ? err.message : 'فشل تحميل المجموعات من Supabase';
+        setLoadError(errorMsg);
         console.error('Error loading groups:', err);
       }
     };
@@ -202,8 +207,9 @@ export default function BookingForm({ onSuccess }: BookingFormProps) {
       
       onSuccess(savedBooking, trackConfig);
     } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'حدث خطأ أثناء حفظ الحجز. يرجى المحاولة مرة أخرى.';
+      setSubmitError(errorMsg);
       console.error('Error saving booking:', err);
-      alert('حدث خطأ أثناء حفظ الحجز. يرجى المحاولة مرة أخرى.');
     } finally {
       setLoading(false);
     }
@@ -227,6 +233,42 @@ export default function BookingForm({ onSuccess }: BookingFormProps) {
         <p className="text-emerald-800 font-extrabold text-lg mt-1">الأستاذ محمود الديب</p>
         <p className="text-xs text-gray-500 mt-1.5">مرحلة الصف الأول الثانوي | لمادة اللغة العربية</p>
       </div>
+
+      {/* Error Alert - Supabase Connection Error */}
+      {loadError && (
+        <div className="mb-6 bg-red-50 border-2 border-red-300 rounded-lg p-4">
+          <div className="flex gap-3">
+            <div className="text-red-600 font-bold mt-0.5">⚠️</div>
+            <div className="flex-1">
+              <p className="text-sm font-bold text-red-800 mb-1">خطأ في الاتصال بقاعدة البيانات</p>
+              <p className="text-xs text-red-700 leading-relaxed">
+                {loadError}
+              </p>
+              <p className="text-xs text-red-600 mt-2">
+                يرجى التأكد من تكوين Supabase بشكل صحيح والاتصال بالإنترنت.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Error Alert - Submission Error */}
+      {submitError && (
+        <div className="mb-6 bg-red-50 border-2 border-red-300 rounded-lg p-4">
+          <div className="flex gap-3">
+            <div className="text-red-600 font-bold mt-0.5">❌</div>
+            <div className="flex-1">
+              <p className="text-sm font-bold text-red-800 mb-1">فشل حفظ الحجز</p>
+              <p className="text-xs text-red-700 leading-relaxed">
+                {submitError}
+              </p>
+              <p className="text-xs text-red-600 mt-2">
+                يرجى التحقق من الاتصال بالإنترنت والمحاولة مرة أخرى.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Main Registration Card */}
       <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-lg space-y-6">

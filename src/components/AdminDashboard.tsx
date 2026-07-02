@@ -10,6 +10,7 @@ export default function AdminDashboard() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [groups, setGroups] = useState<Group[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string>('');
   
   // Search & Filter state
   const [searchTerm, setSearchTerm] = useState('');
@@ -29,6 +30,7 @@ export default function AdminDashboard() {
     capacity: 50,
   });
   const [groupSuccess, setGroupSuccess] = useState(false);
+  const [operationError, setOperationError] = useState<string>('');
 
   useEffect(() => {
     loadData();
@@ -36,12 +38,15 @@ export default function AdminDashboard() {
 
   const loadData = async () => {
     setLoading(true);
+    setError('');
     try {
       const fetchedBookings = await dbService.getBookings();
       const fetchedGroups = await dbService.getGroups();
       setBookings(fetchedBookings);
       setGroups(fetchedGroups);
     } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'فشل تحميل البيانات من Supabase';
+      setError(errorMsg);
       console.error('Error loading admin data:', err);
     } finally {
       setLoading(false);
@@ -54,6 +59,7 @@ export default function AdminDashboard() {
     if (!newGroup.name.trim()) return;
 
     try {
+      setOperationError('');
       await dbService.saveGroup({
         name: newGroup.name.trim(),
         track: newGroup.track,
@@ -78,6 +84,8 @@ export default function AdminDashboard() {
       const updatedGroups = await dbService.getGroups();
       setGroups(updatedGroups);
     } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'فشل إضافة المجموعة';
+      setOperationError(errorMsg);
       console.error('Error saving group:', err);
     }
   };
@@ -86,10 +94,13 @@ export default function AdminDashboard() {
   const handleDeleteGroup = async (id: string) => {
     if (!window.confirm('هل أنت متأكد من حذف هذه المجموعة؟ لن يؤثر الحذف على الحجوزات القديمة.')) return;
     try {
+      setOperationError('');
       await dbService.deleteGroup(id);
       const updatedGroups = await dbService.getGroups();
       setGroups(updatedGroups);
     } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'فشل حذف المجموعة';
+      setOperationError(errorMsg);
       console.error('Error deleting group:', err);
     }
   };
@@ -97,6 +108,7 @@ export default function AdminDashboard() {
   // Toggle Group Active state
   const handleToggleGroup = async (group: Group) => {
     try {
+      setOperationError('');
       await dbService.saveGroup({
         ...group,
         is_active: !group.is_active
@@ -104,6 +116,8 @@ export default function AdminDashboard() {
       const updatedGroups = await dbService.getGroups();
       setGroups(updatedGroups);
     } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'فشل تحديث حالة المجموعة';
+      setOperationError(errorMsg);
       console.error('Error toggling group status:', err);
     }
   };
@@ -230,19 +244,55 @@ export default function AdminDashboard() {
             <p className="font-bold flex items-center gap-1.5">
               <span>حالة اتصال قاعدة البيانات (Supabase):</span>
               {dbService.isConfigured() ? (
-                <span className="text-green-700 font-bold bg-green-100 border border-green-200 px-2 py-0.5 rounded-sm text-[10px]">متصل بـ Supabase بنجاح</span>
+                <span className="text-green-700 font-bold bg-green-100 border border-green-200 px-2 py-0.5 rounded-sm text-[10px]">✓ متصل ومفعّل</span>
               ) : (
-                <span className="text-red-700 font-bold bg-red-100 border border-red-200 px-2 py-0.5 rounded-sm text-[10px]">استخدام الذاكرة المحلية المؤقتة</span>
+                <span className="text-red-700 font-bold bg-red-100 border border-red-200 px-2 py-0.5 rounded-sm text-[10px]">❌ غير مفعّل</span>
               )}
             </p>
             <p className="text-xs text-gray-600 leading-relaxed">
               {dbService.isConfigured() 
-                ? `قاعدة البيانات نشطة وحية. يتم حفظ حجوزات ومجموعات الأستاذ محمود الديب ومزامنتها على المشروع الخاص بك في سحابة Supabase.`
-                : `الموقع يعمل حالياً باستخدام الذاكرة المحلية (LocalStorage) لتبسيط تجربة الاستوديو الفورية. يمكنك ربط قاعدة بيانات Supabase الحقيقية عن طريق تعيين مفتاح VITE_SUPABASE_URL و VITE_SUPABASE_ANON_KEY في أسرار البيئة الموضحة بملف المساعدة المرفق.`}
+                ? `✅ جميع البيانات يتم حفظها ومزامنتها مباشرة على Supabase. الموقع يعمل بكامل طاقته!`
+                : `⚠️ Supabase غير مفعّل. يرجى التأكد من تعيين VITE_SUPABASE_URL و VITE_SUPABASE_ANON_KEY في بيئة الاستضافة. راجع .env.example للتفاصيل.`}
             </p>
           </div>
         </div>
       </div>
+
+      {/* Error Alert - Load Error */}
+      {error && (
+        <div className="bg-red-50 border-2 border-red-300 rounded-lg p-4 mb-6">
+          <div className="flex gap-3">
+            <AlertTriangle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="text-sm font-bold text-red-800 mb-1">خطأ في تحميل البيانات</p>
+              <p className="text-xs text-red-700 leading-relaxed">
+                {error}
+              </p>
+              <button
+                onClick={loadData}
+                className="mt-2 text-xs font-bold text-red-700 hover:text-red-900 underline"
+              >
+                حاول التحميل مرة أخرى
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Error Alert - Operation Error */}
+      {operationError && (
+        <div className="bg-red-50 border-2 border-red-300 rounded-lg p-4 mb-6">
+          <div className="flex gap-3">
+            <AlertTriangle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="text-sm font-bold text-red-800 mb-1">خطأ في العملية</p>
+              <p className="text-xs text-red-700 leading-relaxed">
+                {operationError}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Navigation tabs */}
       <div className="flex border-b border-gray-200 mb-6 gap-2">
