@@ -228,7 +228,7 @@ export default function Receipt({ booking, trackConfig, onNewBooking }: ReceiptP
         <div className="flex justify-between items-start border-b border-gray-100 pb-4 mb-5">
           <div>
             <span className="text-xs font-semibold uppercase tracking-wider text-amber-600 block">منصة الحجز الإلكتروني</span>
-            <h1 className="text-xl font-black text-emerald-900">الأستاذ محمود الديب</h1>
+            <h1 className="text-xl font-black text-emerald-900">البارع محمود الديب</h1>
             <p className="text-[10px] text-gray-400 mt-0.5">الصف الثاني الثانوي | ٢٠٢٦ - ٢٠٢٧</p>
           </div>
           
